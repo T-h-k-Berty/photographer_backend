@@ -1,4 +1,4 @@
-const { Portfolio, Gallery, Package } = require("../models");
+const { Portfolio, Gallery, Package, User } = require("../models");
 
 exports.createPortfolio = async (req, res) => {
   try {
@@ -113,3 +113,20 @@ exports.deletePortfolio = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+// ✅ Add this to portfolioController.js
+
+exports.getPortfolioByUserId = async (req, res) => {
+  try {
+    const portfolio = await Portfolio.findOne({
+      where: { userId: req.params.userId },
+      include: [Gallery, Package, User], // ✅ Include User model to access rating
+    });
+
+    if (!portfolio) return res.status(404).json({ message: "Portfolio not found" });
+
+    res.json(portfolio);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+

@@ -3,23 +3,19 @@ const cors = require("cors");
 const sequelize = require("./config/db");
 const authRoutes = require("./routes/authRoutes");
 const userRoutes = require("./routes/userRoutes");
-const portfolioRoutes = require("./routes/portfolioRoutes"); // ✅ Import portfolio routes
+const portfolioRoutes = require("./routes/portfolioRoutes");
 const PATHS = require("./paths");
 
 const app = express();
 
-// Middleware
-app.use(express.json());
 app.use(cors());
-app.use("/uploads", express.static("uploads")); // Serve uploaded files
+app.use(express.json());
+app.use("/uploads", express.static("uploads"));
 
-// Routes
 app.use(PATHS.AUTH.BASE, authRoutes);
 app.use(PATHS.USERS.BASE, userRoutes);
-app.use("/api/portfolios", portfolioRoutes); // ✅ Register portfolio route
+app.use("/api/portfolios", portfolioRoutes);
 
-// Sync Database
-sequelize.sync({ alter: true }).then(() => console.log("✅ Database synced"));
+sequelize.sync({ alter: true }).then(() => console.log("✅ DB Synced"));
 
-// Export for server.js
 module.exports = app;

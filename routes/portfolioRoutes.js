@@ -6,6 +6,7 @@ const {
   getPortfolioById,
   updatePortfolio,
   deletePortfolio,
+  getPortfolioByUserId,
 } = require("../controllers/portfolioController");
 
 const router = express.Router();
@@ -22,5 +23,9 @@ router.get("/", getAllPortfolios);
 router.get("/:id", getPortfolioById);
 router.put("/:id", upload.any(), updatePortfolio);
 router.delete("/:id", deletePortfolio);
+// In portfolioRoutes.js
+router.get("/user/:userId", getPortfolioByUserId); // ✅ Add this line above `/:id`
+
+
 
 module.exports = router;

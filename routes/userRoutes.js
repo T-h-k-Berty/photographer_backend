@@ -1,12 +1,13 @@
 const express = require("express");
-const User = require("../models/userModel");
-const PATHS = require("../paths"); // ✅ Fix the import
-
-
 const router = express.Router();
+const User = require("../models/userModel");
+const { getAllPhotographers, ratePhotographer } = require("../controllers/userController");
 
-// Get All Users
-router.get(PATHS.USERS.GET_ALL_USERS, async (req, res) => {
+// IMPORTANT: Specific routes go BEFORE dynamic :id
+router.get("/photographers", getAllPhotographers);
+router.post("/rate/:photographerId", ratePhotographer);
+
+router.get("/all", async (req, res) => {
   try {
     const users = await User.findAll();
     res.json(users);
@@ -15,12 +16,10 @@ router.get(PATHS.USERS.GET_ALL_USERS, async (req, res) => {
   }
 });
 
-// Get User by ID
-router.get(PATHS.USERS.GET_USER_BY_ID, async (req, res) => {
+router.get("/:id", async (req, res) => {
   try {
     const user = await User.findByPk(req.params.id);
     if (!user) return res.status(404).json({ message: "User not found" });
-
     res.json(user);
   } catch (error) {
     res.status(500).json({ error: error.message });
