@@ -1,5 +1,12 @@
 const express = require("express");
-const { register, login } = require("../controllers/authController");
+const {
+  register,
+  login,
+  sendOTP,
+  verifyOTP,
+  resetPassword,
+} = require("../controllers/authController");
+
 const multer = require("multer");
 
 const router = express.Router();
@@ -23,7 +30,7 @@ router.post("/register", upload.single("profilePicture"), async (req, res) => {
   }
 });
 
-// ✅ Login Route with Error Handling
+// ✅ Login Route
 router.post("/login", async (req, res) => {
   try {
     if (!req.body.email || !req.body.password) {
@@ -34,5 +41,10 @@ router.post("/login", async (req, res) => {
     res.status(500).json({ message: "Login failed", error: error.message });
   }
 });
+
+// ✅ Forgot Password Routes
+router.post("/send-otp", sendOTP);
+router.post("/verify-otp", verifyOTP);
+router.post("/reset-password", resetPassword);
 
 module.exports = router;

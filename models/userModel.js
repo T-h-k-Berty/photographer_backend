@@ -11,6 +11,16 @@ const User = sequelize.define("User", {
   isActive: { type: DataTypes.BOOLEAN, defaultValue: true },
   rating: { type: DataTypes.FLOAT, defaultValue: 0 },
   ratingCount: { type: DataTypes.INTEGER, defaultValue: 0 },
+
+  otp: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  otpExpiry: {
+    type: DataTypes.DATE,
+    allowNull: true,
+  },
+  
 });
 
 module.exports = User;
