@@ -1,9 +1,21 @@
 const express = require("express");
 const router = express.Router();
+const multer = require("multer"); // ✅ Fix: import multer
 const User = require("../models/userModel");
-const { getAllPhotographers, ratePhotographer } = require("../controllers/userController");
+const {
+  getAllPhotographers,
+  ratePhotographer,
+  updateUserProfile,
+} = require("../controllers/userController");
 
-// IMPORTANT: Specific routes go BEFORE dynamic :id
+// Multer configuration
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, "uploads/"),
+  filename: (req, file, cb) => cb(null, `${Date.now()}-${file.originalname}`),
+});
+const upload = multer({ storage });
+
+// Routes
 router.get("/photographers", getAllPhotographers);
 router.post("/rate/:photographerId", ratePhotographer);
 
@@ -25,5 +37,8 @@ router.get("/:id", async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
+
+// ✅ Update profile route with profile picture upload
+router.put("/:id/update", upload.single("profilePicture"), updateUserProfile);
 
 module.exports = router;

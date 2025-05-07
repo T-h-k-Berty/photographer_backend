@@ -31,3 +31,27 @@ exports.ratePhotographer = async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 };
+exports.updateUserProfile = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { name, email, password } = req.body;
+        const profilePicture = req.file ? req.file.path : null;
+
+        const user = await User.findByPk(id);
+        if (!user) return res.status(404).json({ message: "User not found" });
+
+        user.name = name || user.name;
+        user.email = email || user.email;
+        if (password) {
+            user.password = password; // You can hash here if needed
+        }
+        if (profilePicture) {
+            user.profilePicture = profilePicture;
+        }
+
+        await user.save();
+        res.json({ message: "Profile updated successfully", user });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
