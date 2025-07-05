@@ -5,13 +5,16 @@ const authRoutes = require("./routes/authRoutes");
 const userRoutes = require("./routes/userRoutes");
 const portfolioRoutes = require("./routes/portfolioRoutes");
 const PATHS = require("./paths");
+const eventScheduleRoutes = require("./routes/eventScheduleRoutes");
 
 const app = express();
 
 app.use(cors());
-app.use(express.json());
+app.use(express.json()); // << Ensure this is BEFORE any routes needing req.body
 app.use("/uploads", express.static("uploads"));
 
+// Register routes only once and after middleware
+app.use("/api/events", eventScheduleRoutes);
 app.use(PATHS.AUTH.BASE, authRoutes);
 app.use(PATHS.USERS.BASE, userRoutes);
 app.use("/api/portfolios", portfolioRoutes);
