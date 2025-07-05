@@ -6,6 +6,8 @@ const userRoutes = require("./routes/userRoutes");
 const portfolioRoutes = require("./routes/portfolioRoutes");
 const PATHS = require("./paths");
 const eventScheduleRoutes = require("./routes/eventScheduleRoutes");
+const bookingRoutes = require("./routes/bookingRoutes");
+const notificationRoutes = require("./routes/notificationRoutes");
 
 const app = express();
 
@@ -18,6 +20,8 @@ app.use("/api/events", eventScheduleRoutes);
 app.use(PATHS.AUTH.BASE, authRoutes);
 app.use(PATHS.USERS.BASE, userRoutes);
 app.use("/api/portfolios", portfolioRoutes);
+app.use("/api/bookings", bookingRoutes);
+app.use("/api/notifications", notificationRoutes);
 
 sequelize.sync({ alter: true }).then(() => console.log("✅ DB Synced"));
 
