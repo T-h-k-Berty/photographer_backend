@@ -1,6 +1,7 @@
+// controllers/bookingController.js
 const { Booking, User, Notification, Portfolio } = require("../models");
 
-// ========== 1. Client creates a booking ==========
+// 1. Create a booking (client creates booking)
 exports.createBooking = async (req, res) => {
   try {
     const { photographerId, name, address, date, time, eventType, description, phone } = req.body;
@@ -34,7 +35,7 @@ exports.createBooking = async (req, res) => {
   }
 };
 
-// ========== 2. All bookings by this client (client sees their own bookings) ==========
+// 2. Get all bookings for the logged-in client (my bookings)
 exports.getClientBookings = async (req, res) => {
   try {
     const clientId = req.user.id;
@@ -51,8 +52,8 @@ exports.getClientBookings = async (req, res) => {
   }
 };
 
-// ========== 3. All bookings for logged-in photographer ==========
-exports.getPhotographerBookings = async (req, res) => {
+// 3. Get all bookings for the logged-in photographer (my received bookings)
+exports.getMyPhotographerBookings = async (req, res) => {
   try {
     const photographerId = req.user.id;
     const bookings = await Booking.findAll({
@@ -68,7 +69,24 @@ exports.getPhotographerBookings = async (req, res) => {
   }
 };
 
-// ========== 4. Photographer accepts a booking ==========
+// 3b. (Admin use, or if you need to fetch by *any* photographer id)
+exports.getPhotographerBookingsById = async (req, res) => {
+  try {
+    const { photographerId } = req.params;
+    const bookings = await Booking.findAll({
+      where: { photographerId },
+      include: [
+        { model: User, as: "Client", attributes: ["id", "name", "email", "profilePicture"] },
+      ],
+      order: [["createdAt", "DESC"]]
+    });
+    res.json(bookings);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// 4. Photographer accepts a booking
 exports.acceptBooking = async (req, res) => {
   try {
     const photographerId = req.user.id;
@@ -95,7 +113,7 @@ exports.acceptBooking = async (req, res) => {
   }
 };
 
-// ========== 5. Photographer cancels a booking ==========
+// 5. Photographer cancels a booking
 exports.cancelBooking = async (req, res) => {
   try {
     const photographerId = req.user.id;
@@ -122,7 +140,7 @@ exports.cancelBooking = async (req, res) => {
   }
 };
 
-// ========== 6. Get a single booking by ID (for either client or photographer) ==========
+// 6. Get a single booking by ID (for either client or photographer)
 exports.getBookingById = async (req, res) => {
   try {
     const { id } = req.params;
@@ -139,7 +157,7 @@ exports.getBookingById = async (req, res) => {
   }
 };
 
-// ========== 7. Admin or authorized: get all bookings by a clientId ==========
+// 7. Admin or authorized: get all bookings by a clientId (for user management, not needed for most apps)
 exports.getBookingsByClientId = async (req, res) => {
   try {
     const { clientId } = req.params;
