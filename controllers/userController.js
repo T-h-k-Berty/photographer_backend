@@ -1,4 +1,5 @@
-const User = require("../models/userModel");
+const { User, Portfolio } = require("../models");
+
 
 exports.getAllPhotographers = async (req, res) => {
     try {
@@ -55,3 +56,59 @@ exports.updateUserProfile = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+
+
+// ... existing exports
+
+exports.getPhotographersWithPortfolioInfo = async (req, res) => {
+  try {
+    const photographers = await User.findAll({
+      where: { role: "photographer" },
+      attributes: ["id", "name", "profilePicture", "rating", "ratingCount"],
+      include: [
+        {
+          model: Portfolio,
+          attributes: ["shopName", "selectedEvents", "locations"],
+        },
+      ],
+    });
+
+    const data = photographers.map((photographer) => {
+      const portfolio = photographer.Portfolios && photographer.Portfolios[0] ? photographer.Portfolios[0] : null;
+
+      // Ensure eventTypes and locations are arrays
+      let eventTypes = [];
+      let locations = [];
+
+      if (portfolio) {
+        if (Array.isArray(portfolio.selectedEvents)) {
+          eventTypes = portfolio.selectedEvents;
+        } else if (typeof portfolio.selectedEvents === "object" && portfolio.selectedEvents !== null) {
+          eventTypes = Object.values(portfolio.selectedEvents);
+        }
+
+        if (Array.isArray(portfolio.locations)) {
+          locations = portfolio.locations;
+        } else if (typeof portfolio.locations === "object" && portfolio.locations !== null) {
+          locations = Object.values(portfolio.locations);
+        }
+      }
+
+      return {
+        id: photographer.id,
+        name: photographer.name,
+        profilePicture: photographer.profilePicture,
+        rating: photographer.rating,
+        ratingCount: photographer.ratingCount,
+        shopName: portfolio ? portfolio.shopName : null,
+        eventTypes,
+        locations,
+      };
+    });
+
+    res.json(data);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+

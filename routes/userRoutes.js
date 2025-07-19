@@ -6,6 +6,7 @@ const {
   getAllPhotographers,
   ratePhotographer,
   updateUserProfile,
+  getPhotographersWithPortfolioInfo,
 } = require("../controllers/userController");
 
 // Multer configuration
@@ -40,5 +41,6 @@ router.get("/:id", async (req, res) => {
 
 // ✅ Update profile route with profile picture upload
 router.put("/:id/update", upload.single("profilePicture"), updateUserProfile);
+router.get("/photographers/with-portfolio", getPhotographersWithPortfolioInfo);
 
 module.exports = router;

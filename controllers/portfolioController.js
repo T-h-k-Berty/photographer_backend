@@ -11,6 +11,10 @@ exports.createPortfolio = async (req, res) => {
       locations,
       galleries,
       packages,
+      facebook,
+      instagram,
+      twitter,
+      whatsapp,
     } = req.body;
 
     const profilePicture = req.files?.find(f => f.fieldname === "profilePicture")?.filename || null;
@@ -25,20 +29,21 @@ exports.createPortfolio = async (req, res) => {
       photographerName,
       description,
       profilePicture,
-      backgroundPicture, // ✅ Use the corrected variable here
+      backgroundPicture,
       selectedEvents: JSON.parse(selectedEvents),
       locations: JSON.parse(locations),
+      facebook,
+      instagram,
+      twitter,
+      whatsapp,
     });
-
 
     for (let i = 0; i < parsedGalleries.length; i++) {
       const g = parsedGalleries[i];
-
       const getPhoto = (fieldName) => {
         const file = req.files.find(f => f.fieldname === fieldName);
         return file ? file.filename : "";
       };
-
       const galleryData = {
         portfolioId: portfolio.id,
         eventType: g.eventType,
@@ -47,7 +52,6 @@ exports.createPortfolio = async (req, res) => {
         photo2: getPhoto(`galleryPhotos[${i}][photo2]`),
         photo3: getPhoto(`galleryPhotos[${i}][photo3]`),
       };
-
       await Gallery.create(galleryData);
     }
 
@@ -105,6 +109,10 @@ exports.updatePortfolio = async (req, res) => {
       locations,
       galleries,
       packages,
+      facebook,
+      instagram,
+      twitter,
+      whatsapp,
     } = req.body;
 
     const profilePicture = req.files?.find(f => f.fieldname === "profilePicture")?.filename || portfolio.profilePicture;
@@ -119,6 +127,10 @@ exports.updatePortfolio = async (req, res) => {
       backgroundPicture,
       selectedEvents: JSON.parse(selectedEvents),
       locations: JSON.parse(locations),
+      facebook,
+      instagram,
+      twitter,
+      whatsapp,
     });
 
     const parsedGalleries = JSON.parse(galleries);
@@ -131,7 +143,6 @@ exports.updatePortfolio = async (req, res) => {
         const file = req.files.find(f => f.fieldname === fieldName);
         return file ? file.filename : g[fieldName];
       };
-
       const galleryData = {
         portfolioId: portfolio.id,
         eventType: g.eventType,
@@ -140,7 +151,6 @@ exports.updatePortfolio = async (req, res) => {
         photo2: getPhoto(`galleryPhotos[${i}][photo2]`),
         photo3: getPhoto(`galleryPhotos[${i}][photo3]`),
       };
-
       if (g.id) {
         const existing = await Gallery.findByPk(g.id);
         if (existing) {
@@ -159,7 +169,6 @@ exports.updatePortfolio = async (req, res) => {
         description: p.description,
         price: p.price,
       };
-
       if (p.id) {
         const existing = await Package.findByPk(p.id);
         if (existing) {
@@ -177,7 +186,6 @@ exports.updatePortfolio = async (req, res) => {
   }
 };
 
-
 exports.deletePortfolio = async (req, res) => {
   try {
     const portfolio = await Portfolio.findByPk(req.params.id);
@@ -189,15 +197,13 @@ exports.deletePortfolio = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
-// ✅ Add this to portfolioController.js
 
 exports.getPortfolioByUserId = async (req, res) => {
   try {
     const portfolio = await Portfolio.findOne({
       where: { userId: req.params.userId },
-      include: [Gallery, Package, User], // ✅ Include User model to access rating
+      include: [Gallery, Package, User],
     });
-
     if (!portfolio) return res.status(404).json({ message: "Portfolio not found" });
 
     res.json(portfolio);
@@ -205,4 +211,3 @@ exports.getPortfolioByUserId = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
-

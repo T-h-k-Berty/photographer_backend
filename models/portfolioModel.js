@@ -14,10 +14,14 @@ const Portfolio = sequelize.define("Portfolio", {
   shopName: DataTypes.STRING,
   photographerName: DataTypes.STRING,
   profilePicture: DataTypes.STRING,
-  backgroundPicture: DataTypes.STRING, // ✅ Added field
+  backgroundPicture: DataTypes.STRING,
   description: DataTypes.TEXT,
   selectedEvents: DataTypes.JSON,
   locations: DataTypes.JSON,
+  facebook: DataTypes.STRING,
+  instagram: DataTypes.STRING,
+  twitter: DataTypes.STRING,
+  whatsapp: DataTypes.STRING,
 });
 
 module.exports = Portfolio;

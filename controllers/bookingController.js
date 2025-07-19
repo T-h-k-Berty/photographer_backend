@@ -1,5 +1,5 @@
 // controllers/bookingController.js
-const { Booking, User, Notification, Portfolio } = require("../models");
+const { Booking, User, Notification, Portfolio, EventSchedule } = require("../models");
 
 // 1. Create a booking (client creates booking)
 exports.createBooking = async (req, res) => {
@@ -95,10 +95,49 @@ exports.acceptBooking = async (req, res) => {
     const booking = await Booking.findOne({ where: { id: bookingId, photographerId } });
     if (!booking) return res.status(404).json({ message: "Booking not found" });
 
+    // Only accept if not already accepted or canceled
+    if (booking.status === "accepted") {
+      return res.status(400).json({ message: "Booking already accepted." });
+    }
+    if (booking.status === "canceled") {
+      return res.status(400).json({ message: "Booking already canceled." });
+    }
+
     booking.status = "accepted";
     await booking.save();
 
-    // Notify client (ALWAYS include bookingId)
+    // 1. Create EventSchedule entry (if not already present)
+    const existingEvent = await EventSchedule.findOne({
+      where: {
+        userId: photographerId,
+        name: booking.eventType,
+        place: booking.address,
+        date: booking.date,
+        start: booking.time,
+      }
+    });
+    if (!existingEvent) {
+      // Add logging to see exactly what is being created
+      console.log("Creating EventSchedule:", {
+        userId: photographerId,
+        name: booking.eventType,
+        place: booking.address,
+        date: booking.date,
+        start: booking.time,
+        end: booking.time
+      });
+
+      await EventSchedule.create({
+        userId: photographerId,
+        name: booking.eventType,
+        place: booking.address,
+        date: booking.date,
+        start: booking.time,
+        end: booking.time, // If you add end time to booking, use it here
+      });
+    }
+
+    // 2. Notify client
     await Notification.create({
       userId: booking.clientId,
       message: `Your booking with the photographer has been ACCEPTED for ${booking.date} at ${booking.time}.`,
@@ -107,8 +146,9 @@ exports.acceptBooking = async (req, res) => {
       bookingId: booking.id,
     });
 
-    res.json({ message: "Booking accepted", booking });
+    res.json({ message: "Booking accepted, and schedule updated!", booking });
   } catch (err) {
+    console.error("ACCEPT_BOOKING ERROR:", err);
     res.status(500).json({ error: err.message });
   }
 };

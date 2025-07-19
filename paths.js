@@ -17,6 +17,8 @@ const PATHS = {
     DELETE_USER: `${BASE_API}/users/:id/delete`,
     GET_PHOTOGRAPHERS: `${BASE_API}/users/photographers`,
     RATE_PHOTOGRAPHER: `${BASE_API}/users/rate/:photographerId`,
+    GET_PHOTOGRAPHERS_WITH_PORTFOLIO: `${BASE_API}/users/photographers/with-portfolio`,
+
   },
 };
 
