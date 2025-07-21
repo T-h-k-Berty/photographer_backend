@@ -1,6 +1,6 @@
 const { EventSchedule, User } = require("../models");
 
-// Save a single event
+
 exports.createEvent = async (req, res) => {
   try {
     const { userId, name, place, date, start, end } = req.body;
@@ -11,10 +11,10 @@ exports.createEvent = async (req, res) => {
   }
 };
 
-// Save multiple events at once (array)
+
 exports.createMultipleEvents = async (req, res) => {
   try {
-    const { userId, events } = req.body; // events: [{name, place, date, start, end}, ...]
+    const { userId, events } = req.body; 
     if (!Array.isArray(events) || !userId) {
       return res.status(400).json({ message: "Invalid data" });
     }
@@ -29,7 +29,7 @@ exports.createMultipleEvents = async (req, res) => {
   }
 };
 
-// View all events for a user (photographer)
+
 exports.getEventsByUser = async (req, res) => {
   try {
     const userId = req.params.userId;

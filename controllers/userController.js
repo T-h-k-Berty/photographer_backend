@@ -58,7 +58,7 @@ exports.updateUserProfile = async (req, res) => {
 };
 
 
-// ... existing exports
+
 
 exports.getPhotographersWithPortfolioInfo = async (req, res) => {
   try {
@@ -76,7 +76,6 @@ exports.getPhotographersWithPortfolioInfo = async (req, res) => {
     const data = photographers.map((photographer) => {
       const portfolio = photographer.Portfolios && photographer.Portfolios[0] ? photographer.Portfolios[0] : null;
 
-      // Ensure eventTypes and locations are arrays
       let eventTypes = [];
       let locations = [];
 
